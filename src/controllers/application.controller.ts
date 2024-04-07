@@ -1,0 +1,56 @@
+import { Request, Response } from 'express';
+import { CreateApplicationInput } from "../schemas/application.schema";
+import {
+    createApplicationService,
+    getApplicationsService,
+    updateApplicationService
+} from "../services/application.service";
+import { findStudentByIdentifierService } from "../services/student.service";
+
+export const createApplicationHandler = async (
+    req: Request<{}, {}, CreateApplicationInput>,
+    res: Response
+) => {
+    const student = await findStudentByIdentifierService(res.locals.user.username);
+
+    if(!student) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Студент не найден(а)',
+        });
+    }
+
+    const application = await createApplicationService(req.body, student);
+    res.status(201).json({
+        status: 'success',
+        data: application,
+    });
+}
+
+export const getApplicationsHandler = async (
+    req: Request,
+    res: Response
+) => {
+
+    const applications = await getApplicationsService();
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            applications,
+        },
+    });
+}
+
+export const updateApplicationHandler = async (
+    req: Request,
+    res: Response
+) => {
+    const { id } = req.params;
+    const application = await updateApplicationService(id, req.body.response);
+
+    res.status(200).json({
+        status: 'success',
+        data: application,
+    });
+}
