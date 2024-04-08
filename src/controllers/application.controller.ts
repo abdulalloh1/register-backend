@@ -32,7 +32,10 @@ export const getApplicationsHandler = async (
     res: Response
 ) => {
 
-    const applications = await getApplicationsService();
+    const isStudent = res.locals.user.roles.includes('student');
+    const student = isStudent ? await findStudentByIdentifierService(res.locals.user.username): null;
+
+    const applications = await getApplicationsService(student ? student.id : undefined);
 
     res.status(200).json({
         status: 'success',

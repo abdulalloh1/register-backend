@@ -12,8 +12,12 @@ export const createApplicationService = async (input: CreateApplicationInput, st
     });
 }
 
-export const getApplicationsService = async () => {
+export const getApplicationsService = async (studentId) => {
+    console.log(studentId);
     return await applicationRepository.find({
+        where: {
+            student: studentId ? {id: studentId} : undefined
+        },
         relations: ["student"]
     });
 }
