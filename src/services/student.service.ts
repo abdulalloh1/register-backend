@@ -133,11 +133,16 @@ export const updateStudentService = async ({student_id, input, user}: {
 }
 
 export const deleteStudentService = async ({id, user}: { id: string, user: User }) => {
-    return await studentRepo.softDelete({id}).then(() => {
-        return studentRepo.update({id}, {deleted_by: user})
-    })
+    return await studentRepo.delete({id})
 }
 
 export const findStudentByIdentifierService = async (identifier: string) => {
     return await studentRepo.findOneBy({identifier});
+}
+
+export const restoreStudentService = async(identifier: string) => {
+    const queryBuilder = await studentRepo.createQueryBuilder('student');
+
+    queryBuilder.withDeleted();
+
 }

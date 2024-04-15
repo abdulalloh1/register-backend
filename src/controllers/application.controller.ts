@@ -37,10 +37,12 @@ export const getApplicationsHandler = async (
 
     const applications = await getApplicationsService(student ? student.id : undefined);
 
+    const modifiedApplications = applications.filter(i => i.student);
+
     res.status(200).json({
         status: 'success',
         data: {
-            applications,
+            applications: modifiedApplications,
         },
     });
 }

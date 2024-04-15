@@ -17,6 +17,7 @@ import {FindOptionsWhere, ILike} from "typeorm";
 import {Student} from "../entities/student.entity";
 import {Order} from "../utils/enums";
 import {PaginateQueryInput} from "../schemas/pagination.schema";
+import { deleteUserService } from "../services/user.service";
 
 type DynamicWhere<T> = {
     [P in keyof T]?: FindOptionsWhere<T[P]> | any;
@@ -189,13 +190,17 @@ export const deleteStudentHandler = async (
     next: NextFunction
 ) => {
     try {
-        const student = await findStudentService({id: req.params.id})
+        const student = await findStudentService(
+            {id: req.params.id},
+            ['user']
+        )
 
         if (!student) {
             return next(new AppError(404, "Студент не найден"))
         }
 
         await deleteStudentService({id: student.id, user: res.locals.user})
+        if(student.user) await deleteUserService( student.user.id, res.locals.user )
 
         res.status(204).json({
             status: "success",

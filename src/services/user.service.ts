@@ -79,3 +79,9 @@ export const createUserForStudent = async (student: Student) => {
 
   return await userRepository.save(user)
 }
+
+export const deleteUserService = async (id: string, user: User) => {
+  return await userRepository.softDelete({id}).then(() => {
+    return userRepository.update({id}, {deleted_by: user})
+  });
+}
